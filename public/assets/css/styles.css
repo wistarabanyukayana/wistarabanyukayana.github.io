@@ -379,6 +379,12 @@ img {
    z-index: 10;
 }
 
+.home__absolute{
+   position: absolute;
+   top: 0;
+   bottom: 0;
+}
+
 .home__social{
    height: max-content;
    position: absolute;
