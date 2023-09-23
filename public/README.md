@@ -10,6 +10,6 @@
 - Developed first with the Mobile First methodology, then for desktop.
 - Compatible with all mobile devices and with a beautiful and pleasant user interface.
 
-💙 last second (https://www.youtube.com/watch?v=-uQIBlaZ4P0&list=WL&index=7&t=2145s)
+💙 last second (https://www.youtube.com/watch?v=-uQIBlaZ4P0&list=WL&index=7&t=8494s)
 
 ![preview img](/preview.png)
