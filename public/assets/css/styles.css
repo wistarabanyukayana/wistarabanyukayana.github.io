@@ -284,13 +284,14 @@ body.dark-theme{
    .nav__menu{
       position: fixed;
       top: -100%;
+      bottom: 100%;
       left: 0;
       background-color: hsla(0, 0%, 0%, 0.75);
       width: 100%;
       padding-block: 1.8rem 5rem;
       text-align: center;
       backdrop-filter: blur(8px);
-      transition: top 0.4s;
+      transition: top 0.4s, bottom 0.4s;
    }
 }
 
@@ -374,6 +375,7 @@ body.dark-theme{
 /* Show menu */
 .show-menu{
    top: 0;
+   bottom: auto;
 }
 
 /* Add shadow header */
@@ -1177,7 +1179,7 @@ body.dark-theme{
 }
 
 /* For large devices */
-@media screen and (min-width: 1150px) {
+@media screen and (min-width: 1150px){
    .container{
       margin-inline: auto;
    }
