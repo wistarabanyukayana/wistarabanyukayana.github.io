@@ -293,6 +293,13 @@ body.dark-theme{
       backdrop-filter: blur(8px);
       transition: top 0.4s, bottom 0.4s;
    }
+
+   .nav__title,
+   .nav__name,
+   .nav__list{
+      left: 100%;
+      transition: left 40ms;
+   }
 }
 
 .nav__title,
@@ -303,6 +310,7 @@ body.dark-theme{
 
 .nav__title{
    display: block;
+   position: relative;
    font-size: var(--smaller-font-size);
    font-weight: var(--font-semi-bold);
    margin-bottom: 3.5rem;
@@ -333,6 +341,7 @@ body.dark-theme{
 
 .nav__list{
    display: flex;
+   position: relative;
    flex-direction: column;
    row-gap: 2.5rem;
 }
@@ -376,6 +385,11 @@ body.dark-theme{
 .show-menu{
    top: 0;
    bottom: auto;
+}
+
+/* Show menu content */
+.show-menu-content{
+   left: 0;
 }
 
 /* Add shadow header */

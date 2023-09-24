@@ -1,13 +1,19 @@
 /*=============== SHOW MENU ===============*/
 const navMenu = document.getElementById('nav-menu'),
       navToggle = document.getElementById('nav-toggle'),
-      navClose = document.getElementById('nav-close')
+      navClose = document.getElementById('nav-close'),
+      navTitle = document.getElementById('nav-title'),
+      navName = document.getElementById('nav-name'),
+      navList = document.getElementById('nav-list')
 
 /*===== MENU SHOW =====*/
 /* Validate if constant exists */
 if(navToggle){
    navToggle.addEventListener('click', () =>{
       navMenu.classList.add('show-menu')
+      navTitle.classList.add('show-menu-content')
+      navName.classList.add('show-menu-content')
+      navList.classList.add('show-menu-content')
    })
 }
 
@@ -16,6 +22,9 @@ if(navToggle){
 if(navClose){
    navClose.addEventListener('click', () =>{
       navMenu.classList.remove('show-menu')
+      navTitle.classList.remove('show-menu-content')
+      navName.classList.remove('show-menu-content')
+      navList.classList.remove('show-menu-content')
    })
 }
 
