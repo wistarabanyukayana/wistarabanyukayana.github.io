@@ -35,9 +35,6 @@ cd my-portofolio-website
 
 ## ✨ Deployment
 
-- Hosted on [Firebase](https://wistarabanyukayana.web.app)
-- Also available via [GitHub Pages](https://wistarabanyukayana.github.io/my-portofolio-website/)
-
 ## 🤝 Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
@@ -47,4 +44,5 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 [Specify your license here, e.g., MIT License]
 
 ---
+
 Made with ❤️ by [wistarabanyukayana](https://github.com/wistarabanyukayana)
