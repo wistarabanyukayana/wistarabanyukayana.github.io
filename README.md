@@ -6,8 +6,7 @@ Welcome to the source code of **my personal portfolio website**!
 
 You can view the latest version of my portfolio at:
 
-- [wistarabanyukayana.web.app](https://wistarabanyukayana.web.app)
-- [GitHub Pages](https://wistarabanyukayana.github.io/my-portofolio-website/)
+- [GitHub Pages](https://wistarabanyukayana.github.io)
 
 ## 🚀 Features
 
@@ -34,6 +33,8 @@ cd my-portofolio-website
 ```
 
 ## ✨ Deployment
+
+- Available via [GitHub Pages](https://wistarabanyukayana.github.io)
 
 ## 🤝 Contributing
 
