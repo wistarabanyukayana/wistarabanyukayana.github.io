@@ -8,10 +8,12 @@
   /*========== Colors ==========*/
   /*Color mode HSL(hue, saturation, lightness)*/
   --first-color: hsl(14, 98%, 50%);
+  --first-color-filter: brightness(0) saturate(100%) invert(40%) sepia(100%) hue-rotate(-14deg) saturate(598%) brightness(100%);
   --black-color: hsl(0, 0%, 0%);
   --black-color-light: hsl(0, 0%, 40%);
   --white-color: hsl(0, 0%, 95%);
   --title-color: hsl(0, 0%, 0%);
+  --title-color-filter: brightness(0) saturate(100%) invert(0%) sepia(0%) hue-rotate(0deg) saturate(0%) brightness(100%);
   --text-color: hsl(0, 0%, 35%);
   --text-color-light: hsl(0, 0%, 64%);
   --body-color: hsl(0, 0%, 87%);
@@ -110,6 +112,7 @@ body.dark-theme{
    --black-color: hsl(0, 0%, 18%);
    --black-color-light: hsl(0, 0%, 30%);
    --title-color: hsl(0, 0%, 95%);
+   --title-color-filter: brightness(0) saturate(100%) invert(95%) sepia(0%) hue-rotate(0deg) saturate(0%) brightness(100%);
    --text-color: hsl(0, 0%, 70%);
    --body-color: hsl(0, 0%, 8%);
    --container-color: hsl(0, 0%, 12%);
@@ -825,9 +828,20 @@ body.dark-theme{
    transition: color 0.4s;
 }
 
+.projects__link img{
+   width: 1rem;
+   filter: var(--title-color-filter);
+   transition: filter 0.4s;
+}
+
+
 .projects__link:hover,
 .projects__link:hover i{
    color: var(--first-color);
+}
+
+.projects__link:hover img {
+   filter: var(--first-color-filter);
 }
 
 .projects__card:hover{
