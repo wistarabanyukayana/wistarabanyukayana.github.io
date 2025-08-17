@@ -102,9 +102,7 @@ function revision() {
 }
 
 function revRewriteAll() {
-  const manifest = JSON.parse(
-    fs.readFileSync("dist/rev-manifest.json", "utf8")
-  );
+  const manifest = gulp.src("dist/rev-manifest.json");
   return gulp
     .src("dist/**/*.{html,css,js}")
     .pipe(revRewrite({ manifest }))
