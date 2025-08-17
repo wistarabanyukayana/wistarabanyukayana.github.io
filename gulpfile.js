@@ -54,7 +54,7 @@ function copyAssets() {
   return gulp
     .src(
       [
-        "assets/img/manifest.json",
+        "assets/img/site.webmanifest",
         "assets/img/browserconfig.xml",
         // Add other asset patterns if needed
       ],
