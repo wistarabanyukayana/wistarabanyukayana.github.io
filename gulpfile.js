@@ -9,6 +9,7 @@ import revDelete from "gulp-rev-delete-original";
 import revRewrite from "gulp-rev-rewrite";
 import { deleteAsync as del } from "del";
 import fs from "fs";
+import path from "path";
 
 const sync = browserSync.create();
 const isProd = process.env.NODE_ENV === "production";
@@ -39,7 +40,7 @@ function js() {
 function images() {
   return gulp
     .src(
-      "assets/img/**/*.{apng,png,avif,gif,jpg,jpeg,jfif,pjpeg,pjp,svg,webp}",
+      "assets/img/**/*.{apng,png,avif,gif,jpg,jpeg,jfif,pjpeg,pjp,svg,webp,ico}",
       {
         base: "assets/img",
         encoding: false,
@@ -86,7 +87,7 @@ function revision() {
       [
         "dist/assets/css/**/*.css",
         "dist/assets/js/**/*.js",
-        "dist/assets/img/**/*.{apng,png,avif,gif,jpg,jpeg,jfif,pjpeg,pjp,svg,webp}",
+        "dist/assets/img/**/*.{apng,png,avif,gif,jpg,jpeg,jfif,pjpeg,pjp,svg,webp,ico,json,webmanifest,xml}",
       ],
       {
         base: "dist",
@@ -104,9 +105,53 @@ function revision() {
 function revRewriteAll() {
   const manifest = gulp.src("dist/rev-manifest.json");
   return gulp
-    .src("dist/**/*.{html,css,js}")
+    .src("dist/**/*.{html,css,js,json,webmanifest}")
     .pipe(revRewrite({ manifest }))
     .pipe(gulp.dest("dist"));
+}
+
+function rewriteManifestIcons(done) {
+  const manifestPath = "dist/rev-manifest.json";
+  if (!fs.existsSync(manifestPath)) return done();
+
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+  // Rewrite site.webmanifest
+  const webmanifestFiles = fs
+    .readdirSync("dist/assets/img")
+    .filter((f) => f.endsWith(".webmanifest"));
+  webmanifestFiles.forEach((file) => {
+    const filePath = path.join("dist/assets/img", file);
+    const json = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    if (json.icons) {
+      json.icons.forEach((icon) => {
+        const iconFile = icon.src.replace(/^\//, "assets/img/");
+        if (manifest[iconFile]) {
+          icon.src = "/" + manifest[iconFile].replace(/^dist\//, "");
+        }
+      });
+      fs.writeFileSync(filePath, JSON.stringify(json, null, 2));
+    }
+  });
+
+  // Rewrite browserconfig.xml
+  const xmlFiles = fs
+    .readdirSync("dist/assets/img")
+    .filter((f) => f.endsWith(".xml"));
+  xmlFiles.forEach((file) => {
+    const filePath = path.join("dist/assets/img", file);
+    let xml = fs.readFileSync(filePath, "utf8");
+    Object.keys(manifest).forEach((orig) => {
+      const revved = manifest[orig];
+      // Replace all occurrences of the original filename
+      const origShort = orig.replace(/^assets\/img\//, "");
+      xml = xml.replace(new RegExp(origShort, "g"), revved);
+      xml = xml.replace(new RegExp(orig, "g"), revved);
+    });
+    fs.writeFileSync(filePath, xml);
+  });
+
+  done();
 }
 
 function serve(done) {
@@ -142,7 +187,8 @@ const build = gulp.series(
   clean,
   gulp.parallel(css, js, images, copyAssets, html),
   revision,
-  revRewriteAll
+  revRewriteAll,
+  rewriteManifestIcons
 );
 
 const dev = gulp.series(build, gulp.parallel(serve, watch));
