@@ -1,5 +1,4 @@
 import gulp from "gulp";
-import browserSync from "browser-sync";
 import csso from "gulp-csso";
 import terser from "gulp-terser";
 import htmlmin from "gulp-htmlmin";
@@ -9,10 +8,25 @@ import revDelete from "gulp-rev-delete-original";
 import revRewrite from "gulp-rev-rewrite";
 import { deleteAsync as del } from "del";
 import fs from "fs";
+import http from "http";
 import path from "path";
 
-const sync = browserSync.create();
-const isProd = process.env.NODE_ENV === "production";
+const DEV_PORT = 3000;
+const MIME_TYPES = {
+  ".css": "text/css; charset=utf-8",
+  ".html": "text/html; charset=utf-8",
+  ".ico": "image/x-icon",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".pdf": "application/pdf",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
+  ".webp": "image/webp",
+  ".xml": "application/xml; charset=utf-8",
+};
 
 // Clean dist directory
 function clean() {
@@ -24,8 +38,7 @@ function css() {
   return gulp
     .src("assets/css/**/*.css", { base: "assets/css" })
     .pipe(csso())
-    .pipe(gulp.dest("dist/assets/css"))
-    .pipe(sync.stream());
+    .pipe(gulp.dest("dist/assets/css"));
 }
 
 // JS processing
@@ -62,6 +75,13 @@ function copyAssets() {
       { base: "assets/img", encoding: false }
     )
     .pipe(gulp.dest("dist/assets/img"));
+}
+
+// Copy documents (CV, etc.) — kept at a stable path, not revisioned
+function copyDocs() {
+  return gulp
+    .src("assets/cv/**/*", { base: "assets", encoding: false, allowEmpty: true })
+    .pipe(gulp.dest("dist/assets"));
 }
 
 // HTML processing
@@ -155,42 +175,78 @@ function rewriteManifestIcons(done) {
 }
 
 function serve(done) {
-  sync.init({
-    server: {
-      baseDir: "dist",
-      serveStaticOptions: {
-        extensions: ["html"],
-      },
-    },
-    port: 3000,
-    open: false,
-    notify: false,
+  const root = path.resolve("dist");
+
+  const server = http.createServer((req, res) => {
+    const requestUrl = new URL(req.url, `http://localhost:${DEV_PORT}`);
+    const requestedPath =
+      requestUrl.pathname === "/" ? "/index.html" : requestUrl.pathname;
+    const filePath = path.resolve(root, `.${decodeURIComponent(requestedPath)}`);
+
+    if (filePath !== root && !filePath.startsWith(`${root}${path.sep}`)) {
+      res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("Forbidden");
+      return;
+    }
+
+    fs.readFile(filePath, (error, content) => {
+      if (error) {
+        res.writeHead(404, {
+          "Cache-Control": "no-store",
+          "Content-Type": "text/plain; charset=utf-8",
+        });
+        res.end("Not found");
+        return;
+      }
+
+      const type =
+        MIME_TYPES[path.extname(filePath).toLowerCase()] ||
+        "application/octet-stream";
+      res.writeHead(200, {
+        "Cache-Control":
+          "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Content-Type": type,
+        Expires: "0",
+        Pragma: "no-cache",
+      });
+      res.end(content);
+    });
   });
-  done();
+
+  server.on("error", done);
+  server.listen(DEV_PORT, "127.0.0.1", () => {
+    console.log(`Serving dist at http://127.0.0.1:${DEV_PORT}`);
+    done();
+  });
 }
 
 // Watch files
-function watch() {
+function watch(done) {
   gulp.watch("assets/css/**/*.css", gulp.series(css, reload));
   gulp.watch("assets/js/**/*.js", gulp.series(js, reload));
   gulp.watch("assets/img/**/*", gulp.series(images, reload));
+  gulp.watch("assets/cv/**/*", gulp.series(copyDocs, reload));
   gulp.watch("*.html", gulp.series(html, reload));
+  done();
 }
 
 // Reload browser
 function reload(done) {
-  sync.reload();
   done();
 }
 
-const build = gulp.series(
+const compile = gulp.series(
   clean,
-  gulp.parallel(css, js, images, copyAssets, html),
+  gulp.parallel(css, js, images, copyAssets, copyDocs, html)
+);
+
+const build = gulp.series(
+  compile,
   revision,
   revRewriteAll,
   rewriteManifestIcons
 );
 
-const dev = gulp.series(build, gulp.parallel(serve, watch));
+const dev = gulp.series(compile, gulp.parallel(serve, watch));
 
 export { clean, build, dev as default };

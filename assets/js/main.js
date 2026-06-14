@@ -1,117 +1,300 @@
-// Detect system theme and apply on load
-function applySystemTheme() {
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  document.body.classList.toggle("dark-theme", prefersDark);
+/**
+ * ============================================================================
+ *  main.js — renders content from data.js and wires up interactions.
+ *  Content lives in data.js; this file is the "engine".
+ * ============================================================================
+ */
+
+const { STATS, PROJECTS, EXPERIENCE, SKILLS, I18N } = window.PORTFOLIO;
+
+/* ---------------------------------------------------------------------------
+ *  LANGUAGE
+ * ------------------------------------------------------------------------- */
+const SUPPORTED = ["en", "id"];
+const storedLang = localStorage.getItem("selected-lang");
+const browserLang = (navigator.language || "en").slice(0, 2);
+let currentLang = SUPPORTED.includes(storedLang)
+  ? storedLang
+  : SUPPORTED.includes(browserLang)
+  ? browserLang
+  : "en";
+
+/* Pick the right side of a bilingual { en, id } field. */
+const t = (field) =>
+  field && typeof field === "object" ? field[currentLang] ?? field.en : field;
+
+/* ---------------------------------------------------------------------------
+ *  RENDERERS
+ * ------------------------------------------------------------------------- */
+function renderStats() {
+  const el = document.getElementById("home-stats");
+  if (!el) return;
+  el.innerHTML = STATS.map(
+    (s) => `
+    <li class="home__stat">
+      <p class="home__stat-value">${s.value}${
+      s.suffix ? `<span>${s.suffix}</span>` : ""
+    }</p>
+      <p class="home__stat-label">${t(s.label)}</p>
+    </li>`
+  ).join("");
 }
 
-// Listen for system theme changes
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (e) => {
-    document.body.classList.toggle("dark-theme", e.matches);
+function renderExperience() {
+  const el = document.getElementById("experience-list");
+  if (!el) return;
+  el.innerHTML = EXPERIENCE.map(
+    (job) => `
+    <li class="experience__item reveal">
+      <div class="experience__meta">
+        <span class="experience__period">${t(job.period)}</span>
+        <span class="experience__kind">${t(job.kind)}</span>
+      </div>
+      <div class="experience__body">
+        <h3 class="experience__role">${t(job.role)}
+          <span class="experience__org">${job.org}</span>
+        </h3>
+        <ul class="experience__points">
+          ${job.points.map((p) => `<li>${t(p)}</li>`).join("")}
+        </ul>
+      </div>
+    </li>`
+  ).join("");
+}
+
+function projectLink(link) {
+  const inner = link.img
+    ? `<img src="${link.img}" alt="" /> ${t(link.label)}`
+    : `<i class="${link.icon}"></i> ${t(link.label)}`;
+  return `<a href="${link.url}" target="_blank" rel="noopener" class="projects__link">${inner}</a>`;
+}
+
+function renderProjects() {
+  const el = document.getElementById("projects-list");
+  if (!el) return;
+  el.innerHTML = PROJECTS.map((p) => {
+    const media = p.image
+      ? `<img src="${p.image}" alt="${p.title}" loading="lazy" class="projects__img" />`
+      : `<div class="projects__placeholder"><i class="ri-terminal-box-line"></i></div>`;
+
+    const metrics = (p.metrics || [])
+      .map(
+        (m) => `
+        <div class="projects__metric">
+          <span class="projects__metric-value">${m.value}</span>
+          <span class="projects__metric-label">${t(m.label)}</span>
+        </div>`
+      )
+      .join("");
+
+    const tech = (p.tech || [])
+      .map((name) => `<span class="tech-badge">${name}</span>`)
+      .join("");
+
+    const links = (p.links || []).map(projectLink).join("");
+
+    return `
+      <article class="projects__card reveal">
+        <div class="projects__image">${media}</div>
+        <div class="projects__content">
+          <p class="projects__type">${t(p.type)}</p>
+          <h3 class="projects__title">${p.title}</h3>
+          <p class="projects__description">${t(p.description)}</p>
+          ${metrics ? `<div class="projects__metrics">${metrics}</div>` : ""}
+          ${tech ? `<div class="projects__tech">${tech}</div>` : ""}
+          ${links ? `<div class="projects__links">${links}</div>` : ""}
+        </div>
+      </article>`;
+  }).join("");
+}
+
+function renderSkills() {
+  const el = document.getElementById("skills-list");
+  if (!el) return;
+  el.innerHTML = SKILLS.map(
+    (group) => `
+    <div class="skills__group reveal">
+      <h3 class="skills__group-title">${t(group.title)}</h3>
+      <div class="skills__tags">
+        ${group.items.map((s) => `<span class="skills__tag">${s}</span>`).join("")}
+      </div>
+    </div>`
+  ).join("");
+}
+
+function renderDynamic() {
+  renderStats();
+  renderExperience();
+  renderProjects();
+  renderSkills();
+  observeReveals();
+}
+
+/* ---------------------------------------------------------------------------
+ *  STATIC i18n — applies to elements with data-i18n / -html / -ph attributes.
+ * ------------------------------------------------------------------------- */
+function applyStaticI18n() {
+  const dict = I18N[currentLang];
+
+  document.querySelectorAll("[data-i18n]").forEach((node) => {
+    const value = dict[node.getAttribute("data-i18n")];
+    if (value != null) node.textContent = value;
   });
-
-// Initial check
-applySystemTheme();
-
-/*=============== DARK LIGHT THEME ===============*/
-const themeButton = document.getElementById("theme-button");
-const darkTheme = "dark-theme";
-const iconTheme = "ri-sun-line";
-
-// Previously selected topic (if user selected)
-const selectedTheme = localStorage.getItem("selected-theme");
-const selectedIcon = localStorage.getItem("selected-icon");
-
-// We obtain the current theme that the interface has by validating the dark-theme class
-const getCurrentTheme = () =>
-  document.body.classList.contains(darkTheme) ? "dark" : "light";
-const getCurrentIcon = () =>
-  themeButton.classList.contains(iconTheme) ? "ri-moon-line" : "ri-sun-line";
-
-// We validate if the user previously chose a topic
-if (selectedTheme) {
-  // If the user previously chose a theme, apply it and set icon
-  document.body.classList[selectedTheme === "dark" ? "add" : "remove"](
-    darkTheme
-  );
-  themeButton.classList[selectedIcon === "ri-moon-line" ? "add" : "remove"](
-    iconTheme
-  );
-} else {
-  // No user preference: set icon to match detected system theme
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  themeButton.classList[prefersDark ? "add" : "remove"](iconTheme);
+  document.querySelectorAll("[data-i18n-html]").forEach((node) => {
+    const value = dict[node.getAttribute("data-i18n-html")];
+    if (value != null) node.innerHTML = value;
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach((node) => {
+    const value = dict[node.getAttribute("data-i18n-ph")];
+    if (value != null) node.setAttribute("placeholder", value);
+  });
 }
 
-// Activate / deactivate the theme manually with the button
+function setLanguage(lang) {
+  currentLang = SUPPORTED.includes(lang) ? lang : "en";
+  localStorage.setItem("selected-lang", currentLang);
+  document.documentElement.lang = currentLang;
+
+  const label = document.getElementById("lang-current");
+  if (label) label.textContent = currentLang.toUpperCase();
+
+  applyStaticI18n();
+  renderDynamic();
+}
+
+const langButton = document.getElementById("lang-button");
+if (langButton) {
+  langButton.addEventListener("click", () =>
+    setLanguage(currentLang === "en" ? "id" : "en")
+  );
+}
+
+/* ---------------------------------------------------------------------------
+ *  THEME — system default + manual override (persisted).
+ * ------------------------------------------------------------------------- */
+const themeButton = document.getElementById("theme-button");
+const DARK = "dark-theme";
+const MOON = "ri-moon-line";
+const SUN = "ri-sun-line";
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+const setThemeIcon = (isDark) => {
+  themeButton.classList.toggle(SUN, isDark);
+  themeButton.classList.toggle(MOON, !isDark);
+};
+
+const storedTheme = localStorage.getItem("selected-theme");
+const startDark = storedTheme ? storedTheme === "dark" : prefersDark.matches;
+document.body.classList.toggle(DARK, startDark);
+setThemeIcon(startDark);
+
 themeButton.addEventListener("click", () => {
-  // Add or remove the dark / icon theme
-  document.body.classList.toggle(darkTheme);
-  themeButton.classList.toggle(iconTheme);
-  // We save the theme and the current icon that the user chose
-  localStorage.setItem("selected-theme", getCurrentTheme());
-  localStorage.setItem("selected-icon", getCurrentIcon());
+  const isDark = document.body.classList.toggle(DARK);
+  setThemeIcon(isDark);
+  localStorage.setItem("selected-theme", isDark ? "dark" : "light");
 });
 
-/*=============== SHOW MENU ===============*/
-const navMenu = document.getElementById("nav-menu"),
-  navToggle = document.getElementById("nav-toggle"),
-  navClose = document.getElementById("nav-close"),
-  navTitle = document.getElementById("nav-title"),
-  navName = document.getElementById("nav-name"),
-  navList = document.getElementById("nav-list");
+/* Follow the system only while the user hasn't chosen manually. */
+prefersDark.addEventListener("change", (e) => {
+  if (localStorage.getItem("selected-theme")) return;
+  document.body.classList.toggle(DARK, e.matches);
+  setThemeIcon(e.matches);
+});
 
-/*===== MENU SHOW =====*/
-/* Validate if constant exists */
-if (navToggle) {
-  navToggle.addEventListener("click", () => {
-    navMenu.classList.add("show-menu");
-    navTitle.classList.add("show-menu-content");
-    navName.classList.add("show-menu-content");
-    navList.classList.add("show-menu-content");
+/* ---------------------------------------------------------------------------
+ *  NAV (mobile menu)
+ * ------------------------------------------------------------------------- */
+const navMenu = document.getElementById("nav-menu");
+const navToggle = document.getElementById("nav-toggle");
+const navClose = document.getElementById("nav-close");
+
+navToggle?.addEventListener("click", () => navMenu.classList.add("show-menu"));
+navClose?.addEventListener("click", () => navMenu.classList.remove("show-menu"));
+document.querySelectorAll(".nav__link").forEach((link) =>
+  link.addEventListener("click", () => navMenu.classList.remove("show-menu"))
+);
+
+/* ---------------------------------------------------------------------------
+ *  SCROLL behaviors: header shadow, scroll-up, active link
+ * ------------------------------------------------------------------------- */
+const header = document.getElementById("header");
+const scrollUp = document.getElementById("scroll-up");
+const sections = document.querySelectorAll("section[id]");
+
+const onScroll = () => {
+  const y = window.scrollY;
+  header.classList.toggle("shadow-header", y >= 50);
+  scrollUp.classList.toggle("show-scroll", y >= 350);
+
+  sections.forEach((section) => {
+    const top = section.offsetTop - 100;
+    const id = section.getAttribute("id");
+    const link = document.querySelector(`.nav__menu a[href="#${id}"]`);
+    if (!link) return;
+    const active = y > top && y <= top + section.offsetHeight;
+    link.classList.toggle("active-link", active);
+  });
+};
+window.addEventListener("scroll", onScroll);
+
+function scrollToHashTarget() {
+  if (!window.location.hash) return;
+
+  const target = document.getElementById(
+    decodeURIComponent(window.location.hash.slice(1))
+  );
+  if (!target) return;
+
+  const offset = (header?.offsetHeight || 0) + 18;
+  const top = target.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo(0, Math.max(top, 0));
+  onScroll();
+  showRevealsInView();
+}
+
+window.addEventListener("hashchange", () => {
+  requestAnimationFrame(scrollToHashTarget);
+});
+
+/* ---------------------------------------------------------------------------
+ *  REVEAL on scroll (IntersectionObserver)
+ * ------------------------------------------------------------------------- */
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+);
+
+function observeReveals() {
+  document
+    .querySelectorAll(".reveal:not(.is-visible)")
+    .forEach((el) => revealObserver.observe(el));
+}
+
+function showRevealsInView() {
+  document.querySelectorAll(".reveal:not(.is-visible)").forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      el.classList.add("is-visible");
+      revealObserver.unobserve(el);
+    }
   });
 }
 
-/*===== MENU HIDDEN =====*/
-/* Validate if constant exists */
-if (navClose) {
-  navClose.addEventListener("click", () => {
-    navMenu.classList.remove("show-menu");
-    navTitle.classList.remove("show-menu-content");
-    navName.classList.remove("show-menu-content");
-    navList.classList.remove("show-menu-content");
-  });
-}
-
-/*=============== REMOVE MENU MOBILE ===============*/
-const navLink = document.querySelectorAll(".nav__link");
-
-const linkAction = () => {
-  const navMenu = document.getElementById("nav-menu");
-  // When we click on each nav__link, we remove the show-menu class
-  navMenu.classList.remove("show-menu");
-};
-navLink.forEach((n) => n.addEventListener("click", linkAction));
-
-/*=============== SHADOW HEADER ===============*/
-const shadowHeader = () => {
-  const header = document.getElementById("header");
-  // When the scroll is greater than 50 viewport height, add the shadow-header class to the header tag
-  this.scrollY >= 50
-    ? header.classList.add("shadow-header")
-    : header.classList.remove("shadow-header");
-};
-window.addEventListener("scroll", shadowHeader);
-
-/*=============== EMAIL JS ===============*/
-const contactForm = document.getElementById("contact-form"),
-  contactMessage = document.getElementById("contact-message");
+/* ---------------------------------------------------------------------------
+ *  EMAIL JS
+ * ------------------------------------------------------------------------- */
+const contactForm = document.getElementById("contact-form");
+const contactMessage = document.getElementById("contact-message");
 
 const sendEmail = (e) => {
   e.preventDefault();
-
-  // serviceID - templateID - #form - publicKey
   emailjs
     .sendForm(
       "service_8c197sc",
@@ -121,73 +304,30 @@ const sendEmail = (e) => {
     )
     .then(
       () => {
-        //Show sent message
-        contactMessage.textContent = "Message sent successfully ✅";
-
-        // Remove message after five seconds
-        setTimeout(() => {
-          contactMessage.textContent = "";
-        }, 5000);
-
-        // Clear input fields
+        contactMessage.textContent = I18N[currentLang]["contact.sent"];
+        setTimeout(() => (contactMessage.textContent = ""), 5000);
         contactForm.reset();
       },
       () => {
-        // Show error message
-        contactMessage.textContent = "Message not sent (service error) ❌";
+        contactMessage.textContent = I18N[currentLang]["contact.error"];
       }
     );
 };
+contactForm?.addEventListener("submit", sendEmail);
 
-contactForm.addEventListener("submit", sendEmail);
+/* ---------------------------------------------------------------------------
+ *  INIT
+ * ------------------------------------------------------------------------- */
+const footerYear = document.getElementById("footer-year");
+if (footerYear) footerYear.textContent = new Date().getFullYear();
 
-/*=============== SHOW SCROLL UP ===============*/
-const scrollUp = () => {
-  const scrollUp = document.getElementById("scroll-up");
-  // When the scroll is higher than 350 viewport height, add the show-scroll class to the a tag with the scrollup class
-  this.scrollY >= 350
-    ? scrollUp.classList.add("show-scroll")
-    : scrollUp.classList.remove("show-scroll");
-};
-window.addEventListener("scroll", scrollUp);
+/* Tag static below-the-fold blocks for reveal (hero stays visible on load). */
+document
+  .querySelectorAll(".section__head, .about__info, .about__perfil")
+  .forEach((el) => el.classList.add("reveal"));
 
-/*=============== SCROLL SECTIONS ACTIVE LINK ===============*/
-const sections = document.querySelectorAll("section[id]");
-
-const scrollActive = () => {
-  const scrollDown = window.scrollY;
-
-  sections.forEach((current) => {
-    const sectionHeight = current.offsetHeight,
-      sectionTop = current.offsetTop - 58,
-      sectionId = current.getAttribute("id"),
-      sectionsClass = document.querySelector(
-        ".nav__menu a[href*=" + sectionId + "]"
-      );
-
-    if (scrollDown > sectionTop && scrollDown <= sectionTop + sectionHeight) {
-      sectionsClass.classList.add("active-link");
-    } else {
-      sectionsClass.classList.remove("active-link");
-    }
-  });
-};
-window.addEventListener("scroll", scrollActive);
-
-/*=============== SCROLL REVEAL ANIMATION ===============*/
-const sr = ScrollReveal({
-  origin: "top",
-  distance: "60px",
-  duration: 2500,
-  delay: 400,
-  reset: true, //Animations repeat
-});
-
-sr.reveal(`.home__perfil, .about__image, .contact__mail`, { origin: "right" });
-sr.reveal(
-  `.home__name, .home__info,
-           .about__container .section__title-1, .about__info,
-           .contact__social, .contact__data`,
-  { origin: "left" }
-);
-sr.reveal(`.services__card, .projects__card`, { interval: 100 });
+setLanguage(currentLang);
+observeReveals();
+scrollToHashTarget();
+window.setTimeout(scrollToHashTarget, 80);
+window.addEventListener("load", scrollToHashTarget);
