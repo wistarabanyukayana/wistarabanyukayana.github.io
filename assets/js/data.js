@@ -23,8 +23,8 @@
 const STATS = [
   { value: "3.91", suffix: "/4.00", label: { en: "GPA", id: "IPK" } },
   {
-    value: "10×",
-    label: { en: "Traffic delivered", id: "Lonjakan trafik" },
+    value: "Growth",
+    label: { en: "Traffic & SEO", id: "Trafik & SEO" },
   },
   {
     value: "#1",
@@ -71,34 +71,32 @@ const PROJECTS = [
     title: "Dallas Tour & Travel",
     image: "assets/img/dtt.png",
     description: {
-      en: "Revitalized the architecture of an established tour-and-travel business. A technical restructure plus a structured SEO strategy and Meta Ads campaigns drove a documented 10× increase in visitor traffic.",
-      id: "Merevitalisasi arsitektur bisnis tour-and-travel yang sudah berjalan. Restrukturisasi teknis dipadu strategi SEO terstruktur dan kampanye Meta Ads menghasilkan kenaikan trafik pengunjung 10× yang terdokumentasi.",
+      en: "Revitalized the architecture of an established tour-and-travel business. A technical restructure plus a structured SEO strategy and Meta Ads campaigns contributed to reported visitor-traffic growth.",
+      id: "Merevitalisasi arsitektur bisnis tour-and-travel yang sudah berjalan. Restrukturisasi teknis dipadu strategi SEO terstruktur dan kampanye Meta Ads berkontribusi pada pertumbuhan trafik pengunjung yang dilaporkan.",
     },
     metrics: [
-      { value: "10×", label: { en: "Visitor traffic", id: "Trafik pengunjung" } },
+      { value: "Growth", label: { en: "Visitor traffic", id: "Trafik pengunjung" } },
       { value: "Meta Ads", label: { en: "Acquisition", id: "Akuisisi" } },
     ],
     tech: ["Web Architecture", "SEO", "Meta Ads", "Analytics"],
     links: [
-      { icon: "ri-link", label: { en: "Visit", id: "Kunjungi" }, url: "https://dallastourandtravel.com/" },
       { icon: "ri-github-line", label: { en: "Code", id: "Kode" }, url: "https://github.com/wistarabanyukayana/dallastourtravel.com" },
     ],
   },
   {
-    type: { en: "Game · Published", id: "Gim · Dipublikasikan" },
+    type: { en: "Game · Archived Release", id: "Gim · Rilis Arsip" },
     title: "One Night at Horror Play House",
     image: "assets/img/ONHPH.webp",
     description: {
-      en: "A horror game inspired by Five Nights at Freddy's with a story of its own: it began as a Scratch project, grew popular, and was rebuilt in Unity and published to the Google Play Store.",
-      id: "Gim horor yang terinspirasi Five Nights at Freddy's dengan kisahnya sendiri: bermula sebagai proyek Scratch, menjadi populer, lalu dibangun ulang di Unity dan dipublikasikan ke Google Play Store.",
+      en: "A horror game inspired by Five Nights at Freddy's with a story of its own: it began as a Scratch project, gained early traction, and was later rebuilt in Unity. The previous mobile release is archived, with a future re-release planned after publishing issues are resolved.",
+      id: "Gim horor yang terinspirasi Five Nights at Freddy's dengan kisahnya sendiri: bermula sebagai proyek Scratch, mendapat traksi awal, lalu dibangun ulang di Unity. Rilis mobile sebelumnya kini diarsipkan, dengan rencana rilis ulang setelah masalah publikasi diselesaikan.",
     },
     metrics: [
-      { value: "Play Store", label: { en: "Published", id: "Dipublikasikan" } },
+      { value: "Archived", label: { en: "Mobile release", id: "Rilis mobile" } },
       { value: "Scratch → Unity", label: { en: "Rebuilt", id: "Dibangun ulang" } },
     ],
     tech: ["Unity", "C#", "Game Design"],
     links: [
-      { icon: "ri-google-play-line", label: { en: "Play Store", id: "Play Store" }, url: "https://play.google.com/store/apps/details?id=com.xictawstudio.onenightathororplayhouseonhph" },
       { img: "https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/scratch.svg", label: { en: "Scratch", id: "Scratch" }, url: "https://scratch.mit.edu/projects/375191498/" },
     ],
   },
@@ -107,11 +105,11 @@ const PROJECTS = [
     title: "SLIK Payment Dashboard",
     image: "",
     description: {
-      en: "Built during my engineering internship at Bank Amar Indonesia: a payment-report dashboard for the SLIK credit-information system, delivered on a 3-month timeline with database integration and access control to banking standards.",
-      id: "Dibangun saat magang engineering di Bank Amar Indonesia: dashboard laporan pembayaran untuk sistem informasi kredit SLIK, diselesaikan dalam 3 bulan dengan integrasi basis data dan kontrol akses sesuai standar perbankan.",
+      en: "Built during my July 2022 Back End Engineer internship at Bank Amar Indonesia: a SLIK monitoring and payment-report dashboard with PHP, Slim, Twig, MySQL/PDO integration, and reporting views for Perfios/Pefindo workflows.",
+      id: "Dibangun saat magang Back End Engineer pada Juli 2022 di Bank Amar Indonesia: dashboard monitoring SLIK dan laporan pembayaran dengan PHP, Slim, Twig, integrasi MySQL/PDO, serta tampilan pelaporan untuk alur kerja Perfios/Pefindo.",
     },
     metrics: [
-      { value: "3 mo", label: { en: "On-time delivery", id: "Tepat waktu" } },
+      { value: "Jul 2022", label: { en: "Internship", id: "Magang" } },
       { value: "SLIK", label: { en: "Credit reporting", id: "Pelaporan kredit" } },
     ],
     tech: ["PHP", "Slim Framework", "SQL", "Dashboard"],
@@ -147,8 +145,8 @@ const EXPERIENCE = [
     kind: { en: "Consultancy", id: "Konsultansi" },
     points: [
       {
-        en: "Restructured the website architecture and SEO, producing a documented 10× increase in visitor traffic.",
-        id: "Merestrukturisasi arsitektur website dan SEO, menghasilkan kenaikan trafik pengunjung 10× yang terdokumentasi.",
+        en: "Restructured the website architecture and SEO, contributing to reported visitor-traffic growth.",
+        id: "Merestrukturisasi arsitektur website dan SEO, berkontribusi pada pertumbuhan trafik pengunjung yang dilaporkan.",
       },
       {
         en: "Ran Meta Ads campaigns for brand expansion and user acquisition, collaborating with the owner, former CTO, and vendors.",
@@ -157,18 +155,18 @@ const EXPERIENCE = [
     ],
   },
   {
-    role: { en: "Software Engineering Intern", id: "Magang Software Engineering" },
+    role: { en: "Back End Engineer Intern", id: "Magang Back End Engineer" },
     org: "PT Bank Amar Indonesia",
-    period: { en: "Jun 2022 — Nov 2022", id: "Jun 2022 — Nov 2022" },
+    period: { en: "Jul 2022", id: "Jul 2022" },
     kind: { en: "Internship", id: "Magang" },
     points: [
       {
-        en: "Built a SLIK payment-report dashboard in PHP and the Slim Framework, delivered within the 3-month timeline.",
-        id: "Membangun dashboard laporan pembayaran SLIK menggunakan PHP dan Slim Framework, selesai dalam tenggat 3 bulan.",
+        en: "Built a SLIK payment-report dashboard in PHP and the Slim Framework during a Back End Engineer internship.",
+        id: "Membangun dashboard laporan pembayaran SLIK menggunakan PHP dan Slim Framework saat magang Back End Engineer.",
       },
       {
-        en: "Implemented database integration, data visualization, and secure access control to banking-industry standards.",
-        id: "Mengimplementasikan integrasi basis data, visualisasi data, dan kontrol akses aman sesuai standar industri perbankan.",
+        en: "Implemented database integration, data visualization, and reporting views for internal SLIK monitoring workflows.",
+        id: "Mengimplementasikan integrasi basis data, visualisasi data, dan tampilan pelaporan untuk alur kerja monitoring SLIK internal.",
       },
     ],
   },
@@ -235,7 +233,7 @@ const I18N = {
 
     "about.title": "About.",
     "about.lead": "From a primary-school robotics hobby to international competitions, then into shipping real software for real businesses.",
-    "about.p1": "What started as a robotics extracurricular — and competitions up to the international level — turned into a deep interest in technology and programming. Today I focus on building things people actually use: corporate websites, a published game, and internal tools.",
+    "about.p1": "What started as a robotics extracurricular — and competitions up to the international level — turned into a deep interest in technology and programming. Today I focus on building things people actually use: corporate websites, game projects, and internal tools.",
     "about.p2": "I care about clean architecture, search visibility, and outcomes I can measure. I work comfortably in both English and Indonesian.",
     "about.langs": "Languages",
     "about.langs.val": "Indonesian (Native · UKBI 669) · English (IELTS Academic 7.5)",
@@ -285,7 +283,7 @@ const I18N = {
 
     "about.title": "Tentang.",
     "about.lead": "Berawal dari hobi robotika di sekolah dasar hingga kompetisi internasional, lalu merilis perangkat lunak nyata untuk bisnis nyata.",
-    "about.p1": "Bermula dari eskul robotika — dan lomba hingga tingkat internasional — yang berkembang menjadi ketertarikan mendalam pada teknologi dan pemrograman. Kini saya fokus membangun hal yang benar-benar dipakai orang: website korporat, gim yang dipublikasikan, dan alat internal.",
+    "about.p1": "Bermula dari eskul robotika — dan lomba hingga tingkat internasional — yang berkembang menjadi ketertarikan mendalam pada teknologi dan pemrograman. Kini saya fokus membangun hal yang benar-benar dipakai orang: website korporat, proyek gim, dan alat internal.",
     "about.p2": "Saya peduli pada arsitektur yang rapi, visibilitas pencarian, dan hasil yang bisa diukur. Saya nyaman bekerja dalam Bahasa Indonesia maupun Inggris.",
     "about.langs": "Bahasa",
     "about.langs.val": "Indonesia (Native · UKBI 669) · Inggris (IELTS Academic 7.5)",
